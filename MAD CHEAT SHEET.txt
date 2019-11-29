@@ -1,0 +1,766 @@
+----
+4A
+----
+
+
+activiti_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/clickBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="33dp"
+        android:text="Click to Get Details"
+        tools:layout_editor_absoluteX="106dp"
+        tools:layout_editor_absoluteY="46dp" />
+</RelativeLayout>
+
+prompt_dialog.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/stuID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:hint="Enter Student ID"
+        android:inputType="textPersonName"
+        tools:layout_editor_absoluteX="85dp"
+        tools:layout_editor_absoluteY="0dp" />
+
+</RelativeLayout>
+
+
+
+
+
+
+
+
+
+MainActivity.java
+
+package com.example.labtest2;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+
+    Button btn;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        btn = (Button)findViewById(R.id.clickBtn);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.prompt_dialog, null);
+                final EditText et1 = (EditText)view.findViewById(R.id.stuID);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setView(view)
+                        // Add action buttons
+                        .setPositiveButton("DISPLAY", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String x = et1.getText().toString();
+                                if(x.equals("IS400"))
+                                    Toast.makeText(MainActivity.this, "Name: Ajit Hegde\nUSN: 1BM15IS400", Toast.LENGTH_SHORT).show();
+                                else
+                                    Toast.makeText(MainActivity.this, "Cannot find Student", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setNegativeButton("HELP", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(MainActivity.this, "Enter the Student ID to find Details", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            }
+        });
+    }
+}
+ 
+
+
+
+
+----
+4B
+----
+
+activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/info">
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="fetchData"
+        android:text="Start Multithread" />
+
+    <TextView
+        android:id="@+id/tV1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="63dp"
+        android:text="Main Thread"
+        android:textAlignment="center"/>
+
+</RelativeLayout>
+
+MainActivity.java
+
+package com.example.ajit.q4b;
+
+import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.widget.TextView;
+
+public class MainActivity extends AppCompatActivity {
+
+    private TextView tvOP;
+    private static final int t1=1, t2=2, t3=3;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        tvOP = (TextView)findViewById(R.id.tV1);
+    }
+    public void fetchData(View v)
+    {
+        tvOP.setText("Main Thread");
+        th1.start();
+        th2.start();
+        th3.start();
+    }
+
+    Thread th1 = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            for (int i=0; i<5; i++)
+            {
+                try
+                {
+                    Thread.sleep(1000);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                handler.sendEmptyMessage(t1);
+            }
+        }
+    });
+
+    Thread th2 = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            for (int i=0; i<5; i++)
+            {
+                try
+                {
+                    Thread.sleep(2000);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                handler.sendEmptyMessage(t2);
+            }
+        }
+    });
+    Thread th3 = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            for (int i=0; i<5; i++)
+            {
+                try
+                {
+                    Thread.sleep(3000);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                handler.sendEmptyMessage(t3);
+            }
+        }
+    });
+    Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            if(msg.what == t1)
+                tvOP.append("\nIn Thread1");
+            if(msg.what == t2)
+                tvOP.append("\nIn Thread2");
+            if(msg.what == t3)
+                tvOP.append("\nIn Thread3");
+        }
+    };
+}
+
+
+
+
+----
+5A
+----
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+</RelativeLayout>
+
+
+package com.example.siddarthashankar.q5a;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.wifi.WifiManager;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+
+public class MainActivity extends AppCompatActivity {
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        BroadcastReceiver x = new MyBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_POWER_CONNECTED);
+        filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        filter.addAction(Intent.ACTION_HEADSET_PLUG);
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+
+        this.registerReceiver(x, filter);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+package com.example.labtest2;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.util.Log;
+
+public class MyBroadcastReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if(intent.getAction().equals(Intent.ACTION_POWER_DISCONNECTED))
+            Toast.makeText(context, "Power Disconnected", Toast.LENGTH_SHORT).show();
+        else if(intent.getAction().equals(Intent.ACTION_POWER_CONNECTED))
+            Toast.makeText(context, "Power Connected", Toast.LENGTH_SHORT).show();
+        else if(intent.getAction().equals(Intent.ACTION_AIRPLANE_MODE_CHANGED))
+            Toast.makeText(context, "Airplane Mode Changed", Toast.LENGTH_SHORT).show();
+        else if(intent.getAction().equals(Intent.ACTION_HEADSET_PLUG))
+            Toast.makeText(context, "Headset Plugged", Toast.LENGTH_SHORT).show();
+        else if(intent.getAction().equals(Intent.ACTION_SCREEN_ON))
+            Toast.makeText(context, "Screen On", Toast.LENGTH_SHORT).show();
+        else if(intent.getAction().equals(Intent.ACTION_SCREEN_OFF))
+            Toast.makeText(context, "Screen Off", Toast.LENGTH_SHORT).show();
+    }
+}
+
+
+
+
+----
+5B
+----
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/response"
+        android:layout_width="match_parent"
+        android:layout_height="353dp"
+        android:text="Fetched Data Here!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.051"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.032" />
+
+    <Button
+        android:id="@+id/parse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="98dp"
+        android:text="Parse" />
+
+    <Button
+        android:id="@+id/post"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="39dp"
+        android:text="POST" />
+
+</RelativeLayout>
+
+
+
+package com.example.siddarthashankar.q5b;
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.*;
+
+public class MainActivity extends AppCompatActivity {
+
+    Button fetchClick, postClick;
+    public static TextView dataView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        fetchClick = (Button) findViewById(R.id.parse);
+        postClick = (Button) findViewById(R.id.post);
+        dataView = (TextView) findViewById(R.id.response);
+
+        fetchClick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fetchData x = new fetchData();
+                x.execute();
+            }
+        });
+
+        postClick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                postData x = new postData(MainActivity.this);
+                x.execute();
+            }
+        });
+    }
+
+
+}
+
+
+
+
+
+fetchData.java
+
+package com.example.labtest2;
+import android.os.AsyncTask;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+public class fetchData extends AsyncTask<Void,Void,Void> {
+    String line ="";
+    String data = "";
+    String lineparsedData = "";
+    String parsedData = "";
+    @Override
+    protected Void doInBackground(Void... params) {
+        try {
+            URL url = new URL("https://sample-test-rest-api.herokuapp.com/storyapi/story");
+            HttpURLConnection hurl = (HttpURLConnection)url.openConnection();
+            InputStream input = hurl.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(input));
+            while(line!=null){
+                line = br.readLine();
+                data+=line;
+            }
+            JSONArray JA = new JSONArray(data);
+            for(int i=0;i<JA.length();i++){
+                JSONObject jo = (JSONObject)JA.get(i);
+                JSONArray JB = jo.getJSONArray("creator");
+                JSONObject creator = (JSONObject)JB.get(0);
+                lineparsedData= "Title: "+jo.get("title")+"\nName:" + creator.get("name") + "\n";
+                parsedData = parsedData + lineparsedData;
+            }
+            return null;
+        }
+        catch(MalformedURLException e){
+
+
+
+        }
+        catch(IOException e){
+
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        MainActivity.dataView.setText(parsedData);
+    }
+}
+
+
+
+postData.java
+
+package com.example.labtest2;
+import android.os.AsyncTask;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+public class fetchData extends AsyncTask<Void,Void,Void> {
+    String line ="";
+    String data = "";
+    String lineparsedData = "";
+    String parsedData = "";
+    @Override
+    protected Void doInBackground(Void... params) {
+        try {
+            URL url = new URL("https://sample-test-rest-api.herokuapp.com/storyapi/story");
+            HttpURLConnection hurl = (HttpURLConnection)url.openConnection();
+            InputStream input = hurl.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(input));
+            while(line!=null){
+                line = br.readLine();
+                data+=line;
+            }
+            JSONArray JA = new JSONArray(data);
+            for(int i=0;i<JA.length();i++){
+                JSONObject jo = (JSONObject)JA.get(i);
+                JSONArray JB = jo.getJSONArray("creator");
+                JSONObject creator = (JSONObject)JB.get(0);
+                lineparsedData= "Title: "+jo.get("title")+"\nName:" + creator.get("name") + "\n";
+                parsedData = parsedData + lineparsedData;
+            }
+            return null;
+        }
+        catch(MalformedURLException e){
+
+
+
+        }
+        catch(IOException e){
+
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        MainActivity.dataView.setText(parsedData);
+    }
+}
+
+
+
+
+----
+6
+----
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <EditText
+        android:id="@+id/fname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="First Name" />
+
+    <EditText
+        android:id="@+id/lname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/fname"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Last Name" />
+
+    <Button
+        android:id="@+id/btnadd"
+        android:layout_width="236dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="103dp"
+        android:text="Add Student"
+        android:onClick="btn_click" />
+
+    <Button
+        android:id="@+id/btndel"
+        android:layout_width="236dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="159dp"
+        android:text="Delete Student"
+        android:onClick="btn_click" />
+
+    <Button
+        android:id="@+id/btnupd"
+        android:layout_width="236dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="216dp"
+        android:text="Update Student"
+        android:onClick="btn_click" />
+
+    <Button
+        android:id="@+id/btnlis"
+        android:layout_width="236dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnupd"
+        android:layout_centerHorizontal="true"
+        android:onClick="btn_click"
+        android:text="List Students" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="302dp"
+        android:layout_height="180dp"
+        android:layout_below="@+id/btnlis"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
+
+
+package com.example.siddarthashankar.q6;
+
+import android.content.DialogInterface;
+import android.database.sqlite.SQLiteException;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText fname, lname;
+    TextView list;
+    dbController dbc;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        fname = (EditText) findViewById(R.id.fname);
+        lname = (EditText) findViewById(R.id.lname);
+        list = (TextView) findViewById(R.id.textView);
+        dbc = new dbController(this, "", null, 1);
+    }
+
+    public void btn_click(View v)
+    {
+        switch (v.getId())
+        {
+            case R.id.btnadd:
+                try
+                {
+                    dbc.insert(fname.getText().toString(), lname.getText().toString());
+                }
+                catch (SQLiteException e)
+                {
+                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.btndel:
+                dbc.delete(fname.getText().toString());
+                break;
+            case R.id.btnupd:
+                AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                dialog.setTitle("Enter New FirstName");
+
+                final EditText newFname = new EditText(this);
+                dialog.setView(newFname);
+
+                dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dbc.update(fname.getText().toString(), newFname.getText().toString());
+                    }
+                });
+
+                dialog.show();
+                break;
+
+            case R.id.btnlis:
+                dbc.list(list);
+                break;
+        }
+    }
+}
+
+
+
+
+
+
+dbController.java
+
+package com.example.labtest2;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.TextView;
+
+
+public class dbController extends SQLiteOpenHelper {
+    public dbController(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+        super(context, "Test1.db", factory, version);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE STUDENT(FNAME TEXT, LNAME TEXT);");
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS STUDENT");
+        onCreate(db);
+    }
+
+    public void insert(String a, String b)
+    {
+        ContentValues cv = new ContentValues();
+        cv.put("FNAME", a);
+        cv.put("LNAME", b);
+        this.getWritableDatabase().insertOrThrow("STUDENT", "", cv);
+    }
+
+    public void delete(String a)
+    {
+        this.getWritableDatabase().delete("STUDENT", "FNAME='"+a+"'", null);
+    }
+
+    public void update(String a, String aa)
+    {
+        this.getWritableDatabase().execSQL("UPDATE STUDENT SET FNAME='"+aa+"' WHERE FNAME='"+a+"';");
+    }
+
+    public void list(TextView tv)
+    {
+        tv.setText("");
+        Cursor c = this.getReadableDatabase().rawQuery("SELECT * FROM STUDENT", null);
+        while(c.moveToNext())
+        {
+            tv.append(c.getString(0)+" "+c.getString(1)+"\n");
+        }
+    }
+}
