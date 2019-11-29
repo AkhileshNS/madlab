@@ -330,6 +330,13 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 ----
 5B
 ----
+
+build.grade (Module:app)
+dependencies {
+    ...
+    implementation "com.android.volley:volley:1.10" 
+}
+
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -371,7 +378,6 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 </RelativeLayout>
 
 
-
 package com.example.siddarthashankar.q5b;
 
 import android.support.v7.app.AppCompatActivity;
@@ -397,157 +403,74 @@ public class MainActivity extends AppCompatActivity {
         fetchClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fetchData x = new fetchData();
-                x.execute();
+                // Instantiate the RequestQueue.
+                RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+
+                StringRequest stringRequest = new StringRequest(
+                        Request.Method.GET,
+                        "https://jsonplaceholder.typicode.com/posts/1",
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.d("LOGS", response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d("LOGS", "That didn't work");
+                            }
+                        });
+
+                queue.add(stringRequest);
             }
         });
 
         postClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                postData x = new postData(MainActivity.this);
-                x.execute();
+                // Instantiate the RequestQueue.
+                RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+
+                StringRequest postRequest = new StringRequest(
+                        Request.Method.POST,
+                        "https://jsonplaceholder.typicode.com/posts",
+                        new Response.Listener<String>()
+                        {
+                            @Override
+                            public void onResponse(String response) {
+                                // response
+                                Log.d("LOGS", response);
+                            }
+                        },
+                        new Response.ErrorListener()
+                        {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // error
+                                Log.d("LOGS", error.getMessage());
+                            }
+                        }
+                ) {
+                    @Override
+                    protected Map<String, String> getParams()
+                    {
+                        Map<String, String>  params = new HashMap<>();
+                        params.put("title", "foo");
+                        params.put("body", "bar");
+                        params.put("userId", "1");
+
+                        return params;
+                    }
+                };
+
+                queue.add(postRequest);
             }
         });
     }
 
 
 }
-
-
-
-
-
-fetchData.java
-
-package com.example.labtest2;
-import android.os.AsyncTask;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-public class fetchData extends AsyncTask<Void,Void,Void> {
-    String line ="";
-    String data = "";
-    String lineparsedData = "";
-    String parsedData = "";
-    @Override
-    protected Void doInBackground(Void... params) {
-        try {
-            URL url = new URL("https://sample-test-rest-api.herokuapp.com/storyapi/story");
-            HttpURLConnection hurl = (HttpURLConnection)url.openConnection();
-            InputStream input = hurl.getInputStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(input));
-            while(line!=null){
-                line = br.readLine();
-                data+=line;
-            }
-            JSONArray JA = new JSONArray(data);
-            for(int i=0;i<JA.length();i++){
-                JSONObject jo = (JSONObject)JA.get(i);
-                JSONArray JB = jo.getJSONArray("creator");
-                JSONObject creator = (JSONObject)JB.get(0);
-                lineparsedData= "Title: "+jo.get("title")+"\nName:" + creator.get("name") + "\n";
-                parsedData = parsedData + lineparsedData;
-            }
-            return null;
-        }
-        catch(MalformedURLException e){
-
-
-
-        }
-        catch(IOException e){
-
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-
-    @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
-        MainActivity.dataView.setText(parsedData);
-    }
-}
-
-
-
-postData.java
-
-package com.example.labtest2;
-import android.os.AsyncTask;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-public class fetchData extends AsyncTask<Void,Void,Void> {
-    String line ="";
-    String data = "";
-    String lineparsedData = "";
-    String parsedData = "";
-    @Override
-    protected Void doInBackground(Void... params) {
-        try {
-            URL url = new URL("https://sample-test-rest-api.herokuapp.com/storyapi/story");
-            HttpURLConnection hurl = (HttpURLConnection)url.openConnection();
-            InputStream input = hurl.getInputStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(input));
-            while(line!=null){
-                line = br.readLine();
-                data+=line;
-            }
-            JSONArray JA = new JSONArray(data);
-            for(int i=0;i<JA.length();i++){
-                JSONObject jo = (JSONObject)JA.get(i);
-                JSONArray JB = jo.getJSONArray("creator");
-                JSONObject creator = (JSONObject)JB.get(0);
-                lineparsedData= "Title: "+jo.get("title")+"\nName:" + creator.get("name") + "\n";
-                parsedData = parsedData + lineparsedData;
-            }
-            return null;
-        }
-        catch(MalformedURLException e){
-
-
-
-        }
-        catch(IOException e){
-
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
-        MainActivity.dataView.setText(parsedData);
-    }
-}
-
-
-
 
 ----
 6
