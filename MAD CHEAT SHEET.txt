@@ -687,3 +687,49 @@ public class dbController extends SQLiteOpenHelper {
         }
     }
 }
+
+========================
+SIMPLE ASYNCTASK EXAMPLE
+========================
+
+public static class bgTask extends AsyncTask<String, String, String> {
+        String log = "";
+
+        bgTask(String log) {
+            this.log = log;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.d("bgTask", "In onPreExecute");
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            Log.d("bgTask", "In doInBackground");
+            Log.d("bgTask", TextUtils.join(",", params));
+            publishProgress("Raksha", "Disha", "Pachauri");
+            Log.d("bgTask", log);
+            return "Hello";
+        }
+
+        @Override
+        protected void onPostExecute(String res) {
+            super.onPostExecute(res);;
+            Log.d("bgTask", "In onPostExecute");
+            Log.d("bgTask", res);
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            Log.d("bgTask", "In onProgressUpdate");
+            Log.d("bgTask", TextUtils.join(",", values));
+        }
+ }
+ 
+ And when you want to execute the task
+ 
+ bgTask task = new bgTask("Hello World");
+ task.execute("Anirudh", "Akhilesh", "Anirban");
